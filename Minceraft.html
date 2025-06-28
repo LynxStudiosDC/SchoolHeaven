@@ -1,0 +1,197 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minceraft v1.8.8 Launcher</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('logo.png'); /* Changed background to logo.png */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Ensures background stays fixed during scroll */
+            margin: 0;
+            color: #fff;
+            text-align: center;
+            overflow: hidden; /* Prevent scroll when iframe is active */
+        }
+
+        .content-wrapper { /* Replaced .container */
+            padding: 20px 20px; /* Adjusted padding to move content up */
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            box-sizing: border-box; /* Include padding in width calculation */
+            margin-top: -50px; /* Moved content wrapper up */
+            position: relative;
+            z-index: 1; /* Ensure content is above potential iframe */
+        }
+
+        /* Styles for the game container and iframe */
+        .game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000; /* Ensure it covers everything */
+            display: none; /* Hidden by default */
+            background-color: #000; /* Black background while loading or if iframe fails */
+        }
+
+        .game-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block; /* Ensure iframe takes full space */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #fff; /* Changed to white for better contrast */
+            margin-bottom: 25px;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Added for readability */
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            color: #fff; /* Changed to white for better contrast */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7); /* Added for readability */
+        }
+
+        .launch-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 18px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .launch-button:hover {
+            background-color: #45a049;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .launch-button:active {
+            background-color: #3e8e41;
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Basic responsive adjustments */
+        @media (max-width: 600px) {
+            .content-wrapper { /* New adjustment for the wrapper */
+                padding: 15px; /* Adjusted padding for smaller screens */
+                margin-top: -30px; /* Adjust margin for smaller screens */
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            p {
+                font-size: 1em;
+            }
+            .launch-button {
+                padding: 15px 30px;
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content-wrapper">
+        <h1>Welcome to Minceraft v1.8.8</h1>
+        
+        <button id="startGameButton" class="launch-button">
+            Start Game
+        </button>
+    </div>
+
+    <div id="gameContainer" class="game-container">
+        <iframe id="gameFrame" allowfullscreen></iframe>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "canvas-confetti": "https://cdn.skypack.dev/canvas-confetti"
+            }
+        }
+    </script>
+    <script type="module">
+        // This will pause execution if dev tools are open, acting as a deterrent.
+        debugger; 
+
+        // Disable right-click context menu on the entire document.
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Disable common keyboard shortcuts for opening developer tools.
+        document.addEventListener('keydown', (e) => {
+            // F12 key
+            if (e.keyCode === 123) {
+                e.preventDefault();
+            }
+            // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (for Windows/Linux)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+            }
+            // Cmd+Option+I, Cmd+Option+J, Cmd+Option+C (for macOS)
+            if (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+            }
+            // Ctrl+U (View Page Source)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+            }
+        });
+
+        import confetti from 'canvas-confetti';
+
+        const startGameButton = document.getElementById('startGameButton');
+        const contentWrapper = document.querySelector('.content-wrapper');
+        const gameContainer = document.getElementById('gameContainer');
+        const gameFrame = document.getElementById('gameFrame');
+
+        startGameButton.addEventListener('click', (event) => {
+            // Prevent default button behavior if any (though for a button, it's usually just form submission)
+            event.preventDefault(); 
+
+            // Trigger confetti effect on button click
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6, x: 0.5 },
+                colors: ['#4CAF50', '#2193b0', '#FFD700', '#F44336']
+            });
+
+            // Hide the initial content
+            contentWrapper.style.display = 'none';
+            // Show the game container and load the iframe
+            gameContainer.style.display = 'block';
+            gameFrame.src = 'https://eaglercraft.com/mc/1.8.8/';
+        });
+    </script>
+</body>
+</html>
