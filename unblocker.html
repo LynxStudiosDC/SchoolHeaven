@@ -1,0 +1,117 @@
+<html>
+<head>
+  <title>Web Unblocker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      text-align: center;
+      width: 100%;
+      height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      max-width: 800px;
+    }
+
+    button {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px auto;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #frame {
+      width: 95%;
+      flex: 1;
+      border: none;
+      margin: 20px auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      color: #666;
+      margin: 10px 0;
+    }
+
+    .logo {
+      width: 120px;
+      height: auto;
+      margin: 10px auto;
+    }
+
+    h1 {
+      margin: 10px 0;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo1.png" alt="Angel Wings Logo" class="logo">
+    <h1>Web Unblocker</h1>
+    <p>Enter the URL you want to access:</p>
+    <input type="text" id="urlInput" placeholder="https://example.com">
+    <button onclick="loadUrl()">Go</button>
+    
+    <iframe id="frame" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+
+    <p class="disclaimer">Note: This is a basic proxy viewer. Some websites may not load correctly due to security restrictions.</p>
+  </div>
+
+  <script>
+    function loadUrl() {
+      const url = document.getElementById('urlInput').value;
+      if (!url) return;
+
+      // Create proxy URL using a free CORS proxy
+      const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+      
+      try {
+        document.getElementById('frame').src = proxyUrl;
+      } catch (e) {
+        alert('Unable to load the requested URL. Please try another URL.');
+      }
+    }
+
+    // Handle enter key press
+    document.getElementById('urlInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadUrl();
+      }
+    });
+  </script>
+</body>
+</html>
